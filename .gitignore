@@ -1,7 +1,7 @@
 #Locals
 .env
 .idea
-.tmp
+venv/.tmp
 ## Terraform template
 # Local .terraform directories
 **/.terraform/*
