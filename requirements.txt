@@ -1,0 +1,6 @@
+--index-url="https://artifactory.oci.oraclecorp.com/api/pypi/global-dev-pypi/simple"
+--extra-index-url="https://artifactory.oci.oraclecorp.com/api/pypi/ocas-service-platform-dev-pypi-local/simple/"
+--trusted-host="artifactory.oci.oraclecorp.com"
+oci>=2.119.1
+genai-agent-service-bmc-python-client
+streamlit

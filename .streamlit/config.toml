@@ -1,0 +1,11 @@
+[client]
+toolbarMode = "minimal"
+[server]
+port = 8005 #Port to expose streamlit
+
+[theme]
+primaryColor = "#e07722"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F0F0"
+textColor = "#000000"
+

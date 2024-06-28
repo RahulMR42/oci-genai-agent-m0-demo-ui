@@ -1,0 +1,16 @@
+ 1069  export oci_config_profile="DEFAULT";export oci_agent_base_url="https://agent-runtime.generativeai.us-chicago-1.oci.oraclecloud.com"
+ 1070  export oci_agent_endpoint="ocid1.genaiagentendpoint.oc1.us-chicago-1.amaaaaaafigrwqyaon55hmjgqdlchad54ux52muer4hsm6y2obpa3abuu6b"
+ 1071  streamlit run agent.py  --server.port  8000  --theme.base "light"
+ 1072  streamlit run agent.py  --server.port  8000  --theme.base "light"
+ 1073  export oci_agent_endpoint="ocid1.genaiagentendpoint.oc1.us-chicago-1.amaaaaaafigrwqya27wppncqffppk4wdeertiaxt46y3dunqwox4a27x3qeq"
+ 1074  streamlit run agent.py  --server.port  8000  --theme.base "light"
+ 1075  pip install streamlit-authenticator
+ 1076  ls -la
+ 1077  mkdir .streamlit
+ 1078  pip install hmac
+ 1079  python
+ 1080  streamlit run agent.py  --server.port  8000  --theme.base "light"
+ 1081  streamlit run agent.py  --server.port  8000  --theme.base "light"
+ 1082  export oci_agent_endpoint="ocid1.genaiagentendpoint.oc1.us-chicago-1.amaaaaaafigrwqya27wppncqffppk4wdeertiaxt46y3dunqwox4a27x3qeq"
+ 1083  streamlit run agent.py  --server.port  8000  --theme.base "light"
+ 1084  history
