@@ -6,13 +6,14 @@ import streamlit as st
 from streamlit_feedback import streamlit_feedback
 import genai_agent_service_bmc_python_client
 from resources.utils import (return_keys_from_endpoint_config,
-                             fetch_endpoint_ocid)
+                             fetch_endpoint_ocid,
+                             set_region)
 
 class Agent:
     def __init__(self):
         self.CONFIG_PROFILE = os.getenv("oci_config_profile", default="DEFAULT")
         self.oci_config = oci.config.from_file()
-        self.agent_base_url = os.environ["oci_agent_base_url"]
+
 
     @staticmethod
     def init_chat_history():
@@ -22,12 +23,12 @@ class Agent:
         if "session_id" not in st.session_state:
             st.session_state.session_id = None
 
-
-    def create_oci_client(self):
+    def create_oci_client(self, region):
         oci_client = genai_agent_service_bmc_python_client.GenerativeAiAgentRuntimeClient(
             config=self.oci_config,
-            service_endpoint=self.agent_base_url,
+            service_endpoint=os.environ['oci_agent_base_url'],
             retry_strategy=oci.retry.NoneRetryStrategy(),
+            region=region,
             timeout=(10, 240))
         return oci_client
 
@@ -39,18 +40,36 @@ class Agent:
             ### About.
             A simple UI to call [OCI Genai Agent endpoints](https://docs.oracle.com/en-us/iaas/Content/generative-ai-agents/home.htm)
             ### Credits.
-            - **Created by rahul.m.r@oracle.com**.
-            - **Inspired from - [cgpavlakos](https://github.com/cgpavlakos/genai_agent/tree/main)**.
+            - **Creator - rahul.m.r@oracle.com**.
+            - **Inspirations (UI)** 
+            - chris.pavlakos@oracle.com
+            - shujie.chen@oracle.com
+            - prabhat.kumar.prabhakar@oracle.com
+            
+            
+            
             """
         )
 
+    def session_exit(self, agent_oci_client):
+        if st.session_state.session_id is not None:
+            agent_endpoint = os.environ['agent_endpoint']
+            delete_session_response = agent_oci_client.delete_session(agent_endpoint, st.session_state.session_id)
+            print(delete_session_response)
 
-    def sidebar(self):
+
+    def logout(self,agent_oci_client):
+        col1, col2, col3 = st.columns([2,2,2])
+        with col2:
+            if st.button("【⏻]", use_container_width=False, help="Logout/Delete Chat Session"):
+                self.session_exit(agent_oci_client)
+
+    def sidebar(self, agent_oci_client):
         with st.sidebar:
             list_of_keys = return_keys_from_endpoint_config()
             selection = st.sidebar.selectbox("Select Endpoint", list_of_keys)
             if selection == "Custom":
-                agent_endpoint = st.text_input("Enter an Agent OCID")
+                agent_endpoint = st.text_input("Enter an Agent OCID",value="")
             else:
                 agent_endpoint = fetch_endpoint_ocid(selection)
             os.environ['agent_endpoint'] = agent_endpoint
@@ -58,6 +77,7 @@ class Agent:
             with col1:
                 if st.button("🔄 Re-run", type="primary", use_container_width=False, help="Reset chat history/Update Endpoint"):
                     st.session_state.messages = []
+                    self.session_exit(agent_oci_client)
                     st.session_state.session_id = None
                     st.rerun()
             with col2:
@@ -66,25 +86,30 @@ class Agent:
                 if st.download_button("⬇️ Download", data, filename, use_container_width=False, help="Download Chat histroy with feedback"):
                     pass
             self.sidebar_message()
+            self.logout(agent_oci_client)
             self.agent_footer()
 
-    def agent_feedback(self):
-            st.toast("Feedback saved.",icon="✔️")
-    def agent_footer(self):
+    @staticmethod
+    def agent_feedback():
+        st.toast("Feedback saved.",icon="✔️")
+
+    @staticmethod
+    def agent_footer():
         footer = """<style>.footer {position: fixed;left: 0;bottom: 0;width: 100%;
                  background-color: #F0F0F0;color: black;text-align: center;}
                 </style><div class='footer'><p> 🏷️ 0.0.0b | 🅾️ Powered by OCI Genai Agent | ©️ - Oracle 2024  </p></div>"""
         st.markdown(footer, unsafe_allow_html=True)
 
     def agent_load(self, display_name, description, stream_option):
-        self.sidebar()
         agent_endpoint = os.environ['agent_endpoint']
+        region = set_region(agent_endpoint)
         st.info(f"🔍 Agent {agent_endpoint} joined the Chat ..")
         if st.session_state.session_id is None:
-            agent_oci_client = self.create_oci_client()
+            agent_oci_client = self.create_oci_client(region)
             session_attributes = genai_agent_service_bmc_python_client.models.CreateSessionDetails(
                 display_name=display_name, idle_timeout_in_seconds=10, description=description
             )
+            self.sidebar(agent_oci_client)
             session_response = agent_oci_client.create_session(session_attributes, agent_endpoint)
             st.session_state.session_id = session_response.data.id
             if hasattr(session_response.data, 'welcome_message'):
@@ -99,7 +124,7 @@ class Agent:
                 st.markdown(user_input)
             with st.spinner():
                 execute_session_details = genai_agent_service_bmc_python_client.models.ExecuteSessionDetails(user_message = str(user_input), should_stream=stream_option)
-                agent_oci_client = self.create_oci_client()
+                agent_oci_client = self.create_oci_client(region)
                 execute_session_response = agent_oci_client.execute_session(agent_endpoint, st.session_state.session_id, execute_session_details)
             if execute_session_response.status == 200:
                 response_content = execute_session_response.data.message.content
