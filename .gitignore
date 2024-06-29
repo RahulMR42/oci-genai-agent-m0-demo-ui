@@ -2,6 +2,7 @@
 .env
 .idea
 venv/.tmp
+.streamlit/secrets.toml
 ## Terraform template
 # Local .terraform directories
 **/.terraform/*

@@ -1,4 +1,4 @@
 {
-  "NAME_FOR_ENDPOINT1" : "ocid for agent point 1",
-  "NAME_FOR_ENDPOINT2": "ocid for agent point 2"
+  "Chat" : "ocid1.genaiagentendpoint.oc1.us-chicago-1.amaaaaaafigrwqya27wppncqffppk4wdeertiaxt46y3dunqwox4a27x3qeq",
+  "Sql": "ocid1.genaiagentendpoint.oc1.us-chicago-1.amaaaaaafigrwqyarfhk4nkxg2x6mizfcojh5fzgqbabserm5yjqk44rocma"
 }
