@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from dotenv import load_dotenv
 
 
@@ -10,6 +11,7 @@ def set_region(endpoint):
         return oci_region
     except IndexError:
         return "Waiting"
+
 
 def fetch_endpoint_ocid(key):
     content=json.load(open("config/endpoints.json"))
@@ -34,6 +36,15 @@ def load_env():
         print(f"Failed to load env {error}")
 
 
+def load_logger(filename):
+    logging.basicConfig(filename=filename,
+                        format='%(asctime)s %(message)s',
+                        filemode='w')
+    # Creating an object
+    logger = logging.getLogger()
+    # Setting the threshold of logger to DEBUG
+    logger.setLevel(logging.INFO)
+    return logger
 
 
 

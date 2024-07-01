@@ -2,7 +2,7 @@
 toolbarMode = "minimal"
 [server]
 port = 9001 #Port to expose streamlit
-
+#
 [theme]
 primaryColor = "#e07722"
 backgroundColor = "#FFFFFF"
